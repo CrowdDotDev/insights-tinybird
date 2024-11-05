@@ -10,13 +10,12 @@ SQL >
         SELECT 
             *,
             SUM(commit_count) OVER (ORDER BY commit_count DESC) as running_total,
-            (SUM(commit_count) OVER (ORDER BY commit_count DESC) * 100.0 / total) as percentage
         FROM commit_aggs
         CROSS JOIN total_commits
     )
     SELECT 
         COUNT(*) as contributors_for_51_percent
     FROM ranked_commits
-    WHERE percentage <= 51
+    WHERE running_total <= (SELECT total * 0.51 FROM total_commits)
 
 
