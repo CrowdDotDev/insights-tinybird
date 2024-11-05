@@ -1,11 +1,8 @@
 import Org from "@/app/components/org";
 
-export default async function OrgPage({
-  params,
-}: {
-  params: { name: string };
-}) {
-  const { name } = await params;
+export default async function OrgPage({ params }: { params: Promise<{ name: string }> }) {
+  const resolvedParams = await params;
+  const { name } = resolvedParams;
 
   return (
     <div className="p-4">
