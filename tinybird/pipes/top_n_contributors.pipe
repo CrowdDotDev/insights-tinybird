@@ -1,0 +1,5 @@
+%
+    SELECT *
+    FROM commit_aggs
+    ORDER BY commit_count DESC
+    LIMIT {{ Int32(n, 10) }}

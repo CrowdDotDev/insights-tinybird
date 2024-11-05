@@ -22,5 +22,3 @@ SQL >
         CROSS JOIN total_commits
     )
     SELECT * from ranked_commits
-
-
