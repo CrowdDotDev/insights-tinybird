@@ -47,8 +47,5 @@ SQL >
             WHERE ORG_NAME = {{ String(org_name) }}
             {% end %}
             {% end %}
-            {% if defined(limit) %}
-            LIMIT {{ Int32(limit) }}
-            {% end %}
 
 
