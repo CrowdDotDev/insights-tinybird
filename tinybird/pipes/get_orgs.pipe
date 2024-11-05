@@ -1,0 +1,8 @@
+TOKEN "read" READ
+
+NODE endpoint
+SQL >
+
+    SELECT * FROM orgs_with_stats
+
+

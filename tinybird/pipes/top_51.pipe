@@ -1,0 +1,22 @@
+TOKEN "read" READ
+NODE commits_with_running_total
+SQL >
+
+    WITH total_commits AS (
+        SELECT SUM(commit_count) as total
+        FROM commit_aggs
+    ),
+    ranked_commits AS (
+        SELECT 
+            *,
+            SUM(commit_count) OVER (ORDER BY commit_count DESC) as running_total,
+            (SUM(commit_count) OVER (ORDER BY commit_count DESC) * 100.0 / total) as percentage
+        FROM commit_aggs
+        CROSS JOIN total_commits
+    )
+    SELECT 
+        COUNT(*) as contributors_for_51_percent
+    FROM ranked_commits
+    WHERE percentage <= 51
+
+

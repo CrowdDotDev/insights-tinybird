@@ -1,0 +1,30 @@
+TOKEN "get_orgs_endpoint_read_5866" READ
+NODE contributors
+SQL >
+
+    %
+        WITH 
+            now() as current_time,
+            CASE 
+                WHEN {{String(timeframe, 'year')}} = 'month' THEN subtractWeeks(current_time, 3)
+                WHEN {{String(timeframe, 'year')}} = 'week' THEN subtractDays(current_time, 6)
+                ELSE subtractMonths(current_time, 11)
+            END as start_period
+        SELECT 
+            CASE 
+                WHEN {{String(timeframe, 'year')}} = 'month' THEN toStartOfWeek(TIMESTAMP)
+                WHEN {{String(timeframe, 'year')}} = 'week' THEN toStartOfDay(TIMESTAMP)
+                ELSE toStartOfMonth(TIMESTAMP)
+            END as period,
+            count(DISTINCT ACTOR_LOGIN) as contributor_count
+        FROM commits
+        WHERE 
+            ORG_NAME = {{String(org_name)}}
+            {% if defined(repo_name) %}
+                AND REPO_NAME = {{String(repo_name)}}
+            {% end %}
+            AND TIMESTAMP >= start_period
+        GROUP BY period
+        ORDER BY period
+
+
