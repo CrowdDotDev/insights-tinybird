@@ -15,6 +15,8 @@ SQL >
             WHERE 
                 REPO_NAME IS NOT NULL 
                 AND ACTOR_LOGIN IS NOT NULL
+                AND ACTOR_LOGIN NOT ILIKE '%bot%'
+                AND ACTOR_LOGIN NOT ILIKE '%robot%'
                 AND CASE 
                     WHEN {{ String(time_range, 'week') }} = 'week' THEN TIMESTAMP >= NOW() - INTERVAL '7 days'
                     WHEN {{ String(time_range, 'week') }} = 'month' THEN TIMESTAMP >= NOW() - INTERVAL '30 days'

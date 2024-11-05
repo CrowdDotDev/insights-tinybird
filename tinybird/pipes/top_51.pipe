@@ -9,7 +9,7 @@ SQL >
     ranked_commits AS (
         SELECT 
             *,
-            SUM(commit_count) OVER (ORDER BY commit_count DESC) as running_total,
+            SUM(commit_count) OVER (ORDER BY commit_count DESC) as running_total
         FROM commit_aggs
         CROSS JOIN total_commits
     )
