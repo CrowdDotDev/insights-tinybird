@@ -1,6 +1,6 @@
 TOKEN "read" READ
 
-NODE top_contributors
+NODE endpoint_contributors_after_n
 SQL >
 
     %
@@ -11,4 +11,5 @@ SQL >
         FROM commit_aggs
         GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
         ORDER BY commit_count DESC
-        LIMIT {{ Int32(number_of_contributors) }}
+        LIMIT {{ Int32(limit) }}
+        OFFSET {{ Int32(offset) }} 

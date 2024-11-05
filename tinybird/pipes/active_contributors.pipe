@@ -1,28 +1,33 @@
+TOKEN "read" READ
+
 TOKEN "get_orgs_endpoint_read_5866" READ
+
 NODE contributors
 SQL >
 
     %
-        WITH 
-            now() as current_time,
-            CASE 
-                WHEN {{String(timeframe, 'year')}} = 'month' THEN subtractWeeks(current_time, 3)
-                WHEN {{String(timeframe, 'year')}} = 'week' THEN subtractDays(current_time, 6)
-                ELSE subtractMonths(current_time, 11)
-            END as start_period
-        SELECT 
-            CASE 
-                WHEN {{String(timeframe, 'year')}} = 'month' THEN formatDateTime(toStartOfWeek(TIMESTAMP), '%m-%d')
-                WHEN {{String(timeframe, 'year')}} = 'week' THEN formatDateTime(toStartOfDay(TIMESTAMP), '%m-%d')
-                ELSE formatDateTime(toStartOfMonth(TIMESTAMP), '%Y-%m') 
-            END as period,
-            count(DISTINCT ACTOR_LOGIN) as contributor_count
-        FROM commits
-        WHERE 
-            ORG_NAME = {{String(org_name, 'kubernetes')}}
-            {% if defined(repo_name) %}
-                AND REPO_NAME = {{String(repo_name)}}
-            {% end %}
-            AND TIMESTAMP >= start_period
-        GROUP BY period
-        ORDER BY period
+            WITH 
+                now() as current_time,
+                CASE 
+                    WHEN {{String(timeframe, 'year')}} = 'month' THEN subtractWeeks(current_time, 3)
+                    WHEN {{String(timeframe, 'year')}} = 'week' THEN subtractDays(current_time, 6)
+                    ELSE subtractMonths(current_time, 11)
+                END as start_period
+            SELECT 
+                CASE 
+                    WHEN {{String(timeframe, 'year')}} = 'month' THEN formatDateTime(toStartOfWeek(TIMESTAMP), '%m-%d')
+                    WHEN {{String(timeframe, 'year')}} = 'week' THEN formatDateTime(toStartOfDay(TIMESTAMP), '%m-%d')
+                    ELSE formatDateTime(toStartOfMonth(TIMESTAMP), '%Y-%m') 
+                END as period,
+                count(DISTINCT ACTOR_LOGIN) as contributor_count
+            FROM commits
+            WHERE 
+                ORG_NAME = {{String(org_name, 'kubernetes')}}
+                {% if defined(repo_name) %}
+                    AND REPO_NAME = {{String(repo_name)}}
+                {% end %}
+                AND TIMESTAMP >= start_period
+            GROUP BY period
+            ORDER BY period
+
+

@@ -1,35 +1,38 @@
+TOKEN "read" READ
+
 TOKEN "get_orgs_endpoint_read_5866" READ
+
 NODE commits_by_person_repo
 SQL >
 
     %
-            SELECT 
-                REPO_NAME,
-                ORG_NAME,
-                ACTOR_LOGIN,
-                ACTOR_AVATAR_URL,
-                COUNT(*) as commit_count,
-                MIN(TIMESTAMP) as first_commit,
-                MAX(TIMESTAMP) as last_commit
-            FROM commits
-            WHERE 
-                REPO_NAME IS NOT NULL 
-                AND ACTOR_LOGIN IS NOT NULL
-                AND ACTOR_LOGIN NOT ILIKE '%bot%'
-                AND ACTOR_LOGIN NOT ILIKE '%robot%'
-                AND CASE 
-                    WHEN {{ String(time_range, 'week') }} = 'week' THEN TIMESTAMP >= NOW() - INTERVAL '7 days'
-                    WHEN {{ String(time_range, 'week') }} = 'month' THEN TIMESTAMP >= NOW() - INTERVAL '30 days'
-                    WHEN {{ String(time_range, 'week') }} = 'year' THEN TIMESTAMP >= NOW() - INTERVAL '1 year'
-                    ELSE TRUE
-                END
-            GROUP BY 
-                REPO_NAME,
-                ORG_NAME,
-                ACTOR_LOGIN,
-                ACTOR_AVATAR_URL
-            ORDER BY 
-                commit_count DESC
+                    SELECT 
+                        REPO_NAME,
+                        ORG_NAME,
+                        ACTOR_LOGIN,
+                        ACTOR_AVATAR_URL,
+                        COUNT(*) as commit_count,
+                        MIN(TIMESTAMP) as first_commit,
+                        MAX(TIMESTAMP) as last_commit
+                    FROM commits
+                    WHERE 
+                        REPO_NAME IS NOT NULL 
+                        AND ACTOR_LOGIN IS NOT NULL
+                        AND ACTOR_LOGIN NOT ILIKE '%bot%'
+                        AND ACTOR_LOGIN NOT ILIKE '%robot%'
+                        AND CASE 
+                            WHEN {{ String(time_range, 'year') }} = 'week' THEN TIMESTAMP >= NOW() - INTERVAL '7 days'
+                            WHEN {{ String(time_range, 'year') }} = 'month' THEN TIMESTAMP >= NOW() - INTERVAL '30 days'
+                            WHEN {{ String(time_range, 'year') }} = 'year' THEN TIMESTAMP >= NOW() - INTERVAL '1 year'
+                            ELSE TRUE
+                        END
+                    GROUP BY 
+                        REPO_NAME,
+                        ORG_NAME,
+                        ACTOR_LOGIN,
+                        ACTOR_AVATAR_URL
+                    ORDER BY 
+                        commit_count DESC
 
 
 
@@ -37,17 +40,17 @@ NODE endpoint
 SQL >
 
     %
-            SELECT *
-            FROM commits_by_person_repo
-            {% if defined(repo_name) %}
-            WHERE REPO_NAME = {{ String(repo_name) }}
-            {% end %}
-            {% if defined(org_name) %}
-            {% if defined(repo_name) %}
-            AND ORG_NAME = {{ String(org_name) }}
-            {% else %}
-            WHERE ORG_NAME = {{ String(org_name) }}
-            {% end %}
-            {% end %}
+                    SELECT *
+                    FROM commits_by_person_repo
+                    {% if defined(repo_name) %}
+                    WHERE REPO_NAME = {{ String(repo_name) }}
+                    {% end %}
+                    {% if defined(org_name) %}
+                    {% if defined(repo_name) %}
+                    AND ORG_NAME = {{ String(org_name) }}
+                    {% else %}
+                    WHERE ORG_NAME = {{ String(org_name) }}
+                    {% end %}
+                    {% end %}
 
 
