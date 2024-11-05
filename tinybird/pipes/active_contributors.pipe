@@ -12,19 +12,17 @@ SQL >
             END as start_period
         SELECT 
             CASE 
-                WHEN {{String(timeframe, 'year')}} = 'month' THEN toStartOfWeek(TIMESTAMP)
-                WHEN {{String(timeframe, 'year')}} = 'week' THEN toStartOfDay(TIMESTAMP)
-                ELSE toStartOfMonth(TIMESTAMP)
+                WHEN {{String(timeframe, 'year')}} = 'month' THEN formatDateTime(toStartOfWeek(TIMESTAMP), '%m-%d')
+                WHEN {{String(timeframe, 'year')}} = 'week' THEN formatDateTime(toStartOfDay(TIMESTAMP), '%m-%d')
+                ELSE formatDateTime(toStartOfMonth(TIMESTAMP), '%Y-%m') 
             END as period,
             count(DISTINCT ACTOR_LOGIN) as contributor_count
         FROM commits
         WHERE 
-            ORG_NAME = {{String(org_name)}}
+            ORG_NAME = {{String(org_name, 'kubernetes')}}
             {% if defined(repo_name) %}
                 AND REPO_NAME = {{String(repo_name)}}
             {% end %}
             AND TIMESTAMP >= start_period
         GROUP BY period
         ORDER BY period
-
-
