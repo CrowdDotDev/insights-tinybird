@@ -5,12 +5,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export function ContributorDependency({
   name,
+  repo_name,
   start_date,
   end_date,
 }: {
   name: string;
   start_date: string;
   end_date: string;
+  repo_name?: string;
 }) {
   const [dependencyPercent, setDependencyPercent] = useState<number | null>(
     null
@@ -28,25 +30,28 @@ export function ContributorDependency({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          `https://api.tinybird.co/v0/pipes/top_51.json?org_name=${name}&start_date=${start_date}&end_date=${end_date}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
-            },
-          }
-        );
+        const baseUrl = `https://api.tinybird.co/v0/pipes/top_51.json?org_name=${name}&start_date=${start_date}&end_date=${end_date}`;
+        const url = repo_name ? `${baseUrl}&repo_name=${repo_name}` : baseUrl;
+
+        const response = await fetch(url, {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
+          },
+        });
         const data = await response.json();
         const percent = data.data[0]["contributors_for_51_percent"];
         setDependencyPercent(percent);
-        const contributorsResponse = await fetch(
-          `https://api.tinybird.co/v0/pipes/top_n_contributors.json?number_of_contributors=${percent}&org_name=${name}&start_date=${start_date}&end_date=${end_date}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
-            },
-          }
-        );
+
+        const contributorsBaseUrl = `https://api.tinybird.co/v0/pipes/top_n_contributors.json?number_of_contributors=${percent}&org_name=${name}&start_date=${start_date}&end_date=${end_date}`;
+        const contributorsUrl = repo_name
+          ? `${contributorsBaseUrl}&repo_name=${repo_name}`
+          : contributorsBaseUrl;
+
+        const contributorsResponse = await fetch(contributorsUrl, {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
+          },
+        });
         const contributorsData = await contributorsResponse.json();
         const logins = contributorsData.data.map(
           (contributor: {
@@ -61,14 +66,16 @@ export function ContributorDependency({
         );
         setTopContributors(logins);
 
-        const remainingResponse = await fetch(
-          `https://api.tinybird.co/v0/pipes/contributors_after_n.json?offset=${percent}&limit=${25}&org_name=${name}&start_date=${start_date}&end_date=${end_date}`,
-          {
-            headers: {
-              Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
-            },
-          }
-        );
+        const remainingBaseUrl = `https://api.tinybird.co/v0/pipes/contributors_after_n.json?offset=${percent}&limit=${25}&org_name=${name}&start_date=${start_date}&end_date=${end_date}`;
+        const remainingUrl = repo_name
+          ? `${remainingBaseUrl}&repo_name=${repo_name}`
+          : remainingBaseUrl;
+
+        const remainingResponse = await fetch(remainingUrl, {
+          headers: {
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
+          },
+        });
         const remainingData = await remainingResponse.json();
         const remainingLogins = remainingData.data.map(
           (contributor: {
@@ -88,7 +95,7 @@ export function ContributorDependency({
     };
 
     fetchData();
-  }, [name]);
+  }, [name, repo_name, start_date, end_date]);
 
   return (
     <div>

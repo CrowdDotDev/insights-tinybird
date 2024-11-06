@@ -1,15 +1,20 @@
-TOKEN "read" READ
-
 NODE get_repos_by_org
 SQL >
 
     %
-        SELECT
-            REPO_ID,
-            REPO_NAME,
-            ORG_NAME
-        FROM repos
-        WHERE ORG_NAME = {{ String(org_name, required=true) }}
-        ORDER BY REPO_NAME
-
-
+        WITH repo_commits AS (
+            SELECT 
+                REPO_NAME,
+                countDistinctMerge(COMMIT_COUNT) as total_commits_Merge
+            FROM daily_commit_counts_mv
+            WHERE ORG_NAME = {{ String(org_name, required=true) }}
+            GROUP BY REPO_NAME
+        )
+        SELECT DISTINCT ON (r.REPO_ID)
+            r.REPO_ID,
+            r.REPO_NAME,
+            r.ORG_NAME
+        FROM repos r
+        LEFT JOIN repo_commits rc ON r.REPO_NAME = rc.REPO_NAME 
+        WHERE r.ORG_NAME = {{ String(org_name, required=true) }}
+        ORDER BY rc.total_commits_Merge DESC NULLS LAST 

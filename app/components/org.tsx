@@ -13,6 +13,14 @@ import { Calendar } from "@/components/ui/calendar";
 import { ActiveContributors } from "./activeContributors";
 import { ContributorDependency } from "./contributorDependency";
 import * as React from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { useEffect, useState } from "react";
 
 // Get default dates
 const getDefaultDates = () => {
@@ -26,16 +34,50 @@ const getDefaultDates = () => {
   };
 };
 
+// Add this type definition
+type Repo = {
+  REPO_ID: number;
+  REPO_NAME: string;
+  ORG_NAME: string;
+};
+
 export default function Org({ name }: { name: string }) {
   const { start, end } = getDefaultDates();
   const [startDate, setStartDate] = React.useState<Date>(new Date(start));
+  const [repos, setRepos] = useState<Repo[]>([]);
+  const [selectedRepo, setSelectedRepo] = useState<string>("");
   const endDate = new Date();
   endDate.setDate(endDate.getDate() - 1); // yesterday
+
+  // Add clear filters function
+  const clearFilters = () => {
+    setStartDate(new Date(start));
+    setSelectedRepo("");
+  };
+
+  // Add this function to fetch repos
+  const fetchRepos = async () => {
+    const response = await fetch(
+      `https://api.tinybird.co/v0/pipes/get_repos.json?org_name=${name}`,
+      {
+        headers: {
+          Authorization:
+            "Bearer p.eyJ1IjogIjAzZDRiNDAxLWY5ZjgtNGM2ZS04MjBlLTgxZWU5ZWNlN2M4NyIsICJpZCI6ICJmN2RhZDA3Ni0zMDUxLTQyNWEtOWFlNi1lMTgyN2FhMzgzODgiLCAiaG9zdCI6ICJldV9zaGFyZWQifQ.FPBUNS5gfXlO6EeU5In6ZPNSIeYTukktDzjMpNZDIyg",
+        },
+      }
+    );
+    const data = await response.json();
+    return data.data as Repo[];
+  };
+
+  useEffect(() => {
+    fetchRepos().then(setRepos);
+  }, []);
 
   return (
     <div className="">
       <div className="mb-4 flex items-center gap-2">
-        <p className="">Start Date</p>
+        <p className="">Start Date:</p>
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -60,15 +102,36 @@ export default function Org({ name }: { name: string }) {
             />
           </PopoverContent>
         </Popover>
+        <p className="ml-4">Repository:</p>
+        <Select value={selectedRepo} onValueChange={setSelectedRepo}>
+          <SelectTrigger className="w-[280px]">
+            <SelectValue placeholder="All" />
+          </SelectTrigger>
+          <SelectContent>
+            {repos.map((repo) => (
+              <SelectItem key={repo.REPO_ID} value={repo.REPO_NAME}>
+                {repo.REPO_NAME.replace(`${name}/`, "")}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button variant="outline" onClick={clearFilters} className="ml-2">
+          Clear
+        </Button>
       </div>
+
+      <div className="mb-4 flex items-center gap-2"></div>
+
       <h2 className="text-xl font-bold mt-6 mb-2">Active Contributors</h2>
       <ActiveContributors
         org_name={name}
+        repo_name={selectedRepo || undefined}
         start_date={startDate.toISOString().split("T")[0]}
         end_date={end}
       />
       <ContributorDependency
         name={name}
+        repo_name={selectedRepo || undefined}
         start_date={startDate.toISOString().split("T")[0]}
         end_date={end}
       />
