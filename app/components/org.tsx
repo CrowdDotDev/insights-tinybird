@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useEffect, useState } from "react";
+import { Counts } from "./counts";
 
 // Get default dates
 const getDefaultDates = () => {
@@ -61,8 +62,7 @@ export default function Org({ name }: { name: string }) {
       `https://api.tinybird.co/v0/pipes/get_repos.json?org_name=${name}`,
       {
         headers: {
-          Authorization:
-            "Bearer p.eyJ1IjogIjAzZDRiNDAxLWY5ZjgtNGM2ZS04MjBlLTgxZWU5ZWNlN2M4NyIsICJpZCI6ICJmN2RhZDA3Ni0zMDUxLTQyNWEtOWFlNi1lMTgyN2FhMzgzODgiLCAiaG9zdCI6ICJldV9zaGFyZWQifQ.FPBUNS5gfXlO6EeU5In6ZPNSIeYTukktDzjMpNZDIyg",
+          Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
         },
       }
     );
@@ -119,22 +119,26 @@ export default function Org({ name }: { name: string }) {
           Clear
         </Button>
       </div>
-
-      <div className="mb-4 flex items-center gap-2"></div>
-
-      <h2 className="text-xl font-bold mt-6 mb-2">Active Contributors</h2>
-      <ActiveContributors
-        org_name={name}
-        repo_name={selectedRepo || undefined}
-        start_date={startDate.toISOString().split("T")[0]}
-        end_date={end}
-      />
-      <ContributorDependency
-        name={name}
-        repo_name={selectedRepo || undefined}
-        start_date={startDate.toISOString().split("T")[0]}
-        end_date={end}
-      />
+      <div className="my-12">
+        <Counts
+          name={name}
+          repo_name={selectedRepo || undefined}
+          start_date={startDate.toISOString().split("T")[0]}
+          end_date={end}
+        />
+        <ActiveContributors
+          org_name={name}
+          repo_name={selectedRepo || undefined}
+          start_date={startDate.toISOString().split("T")[0]}
+          end_date={end}
+        />
+        <ContributorDependency
+          name={name}
+          repo_name={selectedRepo || undefined}
+          start_date={startDate.toISOString().split("T")[0]}
+          end_date={end}
+        />
+      </div>
     </div>
   );
 }

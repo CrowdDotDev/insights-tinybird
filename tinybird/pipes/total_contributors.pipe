@@ -1,5 +1,5 @@
 NODE contributors_current
 SQL >
     SELECT
-        count() as current_contributors
+        count() as total
     FROM commit_aggs
