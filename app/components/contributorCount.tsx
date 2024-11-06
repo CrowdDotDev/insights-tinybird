@@ -47,8 +47,7 @@ export function ContributorCount({
         }`,
         {
           headers: {
-            Authorization:
-              "Bearer p.eyJ1IjogIjAzZDRiNDAxLWY5ZjgtNGM2ZS04MjBlLTgxZWU5ZWNlN2M4NyIsICJpZCI6ICJkNzQzNjNkNi02MWFjLTQ2NDQtYTI0OC1mOGE0YWMwZmRhNTIiLCAiaG9zdCI6ICJldV9zaGFyZWQifQ.mLKLtuNzffHRpfODI9bQfam6U_bo4RPYhAY8MC2PIkk",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
           },
         }
       );
