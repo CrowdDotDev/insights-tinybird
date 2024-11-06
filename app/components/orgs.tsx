@@ -29,7 +29,8 @@ export function Orgs() {
         }
       );
       const data: ApiResponse = await response.json();
-      setOrgs(data.data);
+      // Filter out helm
+      setOrgs(data.data.filter((org) => org["o.ORG_NAME"] !== "helm"));
     }
     fetchOrgs();
   }, []);
