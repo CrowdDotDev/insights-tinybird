@@ -1,0 +1,35 @@
+TOKEN "read" READ
+
+
+NODE star_growth
+SQL >
+    %
+    SELECT
+        toDate(TIMESTAMP) as DATE,
+        REPO_NAME,
+        ORG_NAME,
+        count() as STAR_COUNT
+    FROM stars
+    WHERE
+        DATE >= 
+            CASE 
+                WHEN {{ defined(start_date) }} THEN toDate({{ Date(start_date) }})
+                ELSE subtractYears(now(), 1)
+            END
+        AND DATE < 
+            CASE 
+                WHEN {{ defined(end_date) }} THEN toDate({{ Date(end_date) }})
+                ELSE toDate(now())
+            END
+        {% if defined(org_name) %}
+        AND ORG_NAME = {{ String(org_name) }}
+        {% end %}
+        {% if defined(repo_name) %}
+        AND REPO_NAME = {{ String(repo_name) }}
+        {% end %}
+    GROUP BY
+        DATE,
+        REPO_NAME,
+        ORG_NAME
+    ORDER BY
+        DATE ASC

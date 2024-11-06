@@ -2,6 +2,9 @@ TOKEN "read" READ
 
 NODE contributors_current
 SQL >
+
     SELECT
         count() as total
     FROM commit_aggs
+
+
