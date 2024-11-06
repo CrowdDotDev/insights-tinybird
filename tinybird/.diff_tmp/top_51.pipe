@@ -1,0 +1,29 @@
+TOKEN "read" READ
+
+NODE commits_with_running_total
+SQL >
+
+    WITH author_totals AS (
+            SELECT 
+                ACTOR_LOGIN,
+                ACTOR_AVATAR_URL,
+                SUM(COMMIT_COUNT) as total_commits
+            FROM commit_aggs
+            GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
+        ),
+        total_commits AS (
+            SELECT SUM(total_commits) as total
+            FROM author_totals
+        ),
+        ranked_commits AS (
+            SELECT 
+                *,
+                SUM(total_commits) OVER (ORDER BY total_commits DESC) as running_total
+            FROM author_totals
+            CROSS JOIN total_commits
+        )
+        SELECT count(*) as contributors_for_51_percent
+        FROM ranked_commits
+        WHERE running_total <= total * 0.51
+
+

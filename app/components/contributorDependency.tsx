@@ -3,7 +3,15 @@
 import { useState, useEffect } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export function ContributorDependency({ name }: { name: string }) {
+export function ContributorDependency({
+  name,
+  start_date,
+  end_date,
+}: {
+  name: string;
+  start_date: string;
+  end_date: string;
+}) {
   const [dependencyPercent, setDependencyPercent] = useState<number | null>(
     null
   );
@@ -15,11 +23,13 @@ export function ContributorDependency({ name }: { name: string }) {
   >([]);
   const [activeTab, setActiveTab] = useState("top");
 
+  console.log(start_date, end_date);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `https://api.tinybird.co/v0/pipes/top_51.json?org_name=${name}`,
+          `https://api.tinybird.co/v0/pipes/top_51.json?org_name=${name}&start_date=${start_date}&end_date=${end_date}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
@@ -30,7 +40,7 @@ export function ContributorDependency({ name }: { name: string }) {
         const percent = data.data[0]["contributors_for_51_percent"];
         setDependencyPercent(percent);
         const contributorsResponse = await fetch(
-          `https://api.tinybird.co/v0/pipes/top_n_contributors.json?number_of_contributors=${percent}&org_name=${name}`,
+          `https://api.tinybird.co/v0/pipes/top_n_contributors.json?number_of_contributors=${percent}&org_name=${name}&start_date=${start_date}&end_date=${end_date}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
@@ -52,7 +62,7 @@ export function ContributorDependency({ name }: { name: string }) {
         setTopContributors(logins);
 
         const remainingResponse = await fetch(
-          `https://api.tinybird.co/v0/pipes/contributors_after_n.json?offset=${percent}&limit=${25}&org_name=${name}`,
+          `https://api.tinybird.co/v0/pipes/contributors_after_n.json?offset=${percent}&limit=${25}&org_name=${name}&start_date=${start_date}&end_date=${end_date}`,
           {
             headers: {
               Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,

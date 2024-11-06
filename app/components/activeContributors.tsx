@@ -6,7 +6,33 @@ export function ActiveContributors(params: {
   org_name?: string;
   repo_name?: string;
   timeframe?: string;
+  start_date: string;
+  end_date: string;
 }) {
+  // Format dates to YYYY/MM/DD if they exist
+  const start = new Date(params.start_date);
+  const end = new Date(params.end_date);
+  const diffInDays = Math.ceil(
+    (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+  );
+
+  console.log(diffInDays);
+
+  let group_by = "year";
+  if (diffInDays <= 8) {
+    group_by = "day";
+  } else if (diffInDays <= 35) {
+    group_by = "week";
+  } else if (diffInDays <= 380) {
+    group_by = "month";
+  }
+
+  console.log(group_by);
+
+  const chartParams = {
+    ...params,
+    group_by: group_by,
+  };
   return (
     <BarChart
       endpoint="https://api.tinybird.co/v0/pipes/active_contributors.json"
@@ -26,7 +52,7 @@ export function ActiveContributors(params: {
         "#BE5EA9",
       ]}
       height="500px"
-      params={params}
+      params={chartParams}
     />
   );
 }

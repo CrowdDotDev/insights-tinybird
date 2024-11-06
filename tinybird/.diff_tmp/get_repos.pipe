@@ -1,0 +1,15 @@
+TOKEN "read" READ
+
+NODE get_repos_by_org
+SQL >
+
+    %
+                        SELECT
+                            REPO_ID,
+                            REPO_NAME,
+                            ORG_NAME
+                        FROM repos
+                        WHERE ORG_NAME = {{ String(org_name, required=true) }}
+                        ORDER BY REPO_NAME
+
+
