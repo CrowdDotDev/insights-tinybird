@@ -4,12 +4,14 @@ NODE endpoint_contributors_after_n
 SQL >
 
     %
-        SELECT 
-            ACTOR_LOGIN,
-            ACTOR_AVATAR_URL,
-            SUM(commit_count) as commit_count
-        FROM commit_aggs
-        GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
-        ORDER BY commit_count DESC
-        LIMIT {{ Int32(limit) }}
-        OFFSET {{ Int32(offset) }} 
+            SELECT 
+                ACTOR_LOGIN,
+                ACTOR_AVATAR_URL,
+                SUM(TOTAL_COMMITS) as TOTAL_COMMITS
+            FROM commit_aggs
+            GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
+            ORDER BY TOTAL_COMMITS DESC
+            LIMIT {{ Int32(limit) }}
+            OFFSET {{ Int32(offset) }}
+
+

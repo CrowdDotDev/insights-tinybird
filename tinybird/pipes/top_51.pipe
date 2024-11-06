@@ -7,7 +7,7 @@ SQL >
             SELECT 
                 ACTOR_LOGIN,
                 ACTOR_AVATAR_URL,
-                SUM(commit_count) as total_commits
+                SUM(COMMIT_COUNT) as total_commits
             FROM commit_aggs
             GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
         ),
@@ -25,3 +25,5 @@ SQL >
         SELECT count(*) as contributors_for_51_percent
         FROM ranked_commits
         WHERE running_total <= total * 0.51
+
+

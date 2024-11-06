@@ -4,11 +4,13 @@ NODE top_contributors
 SQL >
 
     %
-        SELECT 
-            ACTOR_LOGIN,
-            ACTOR_AVATAR_URL,
-            SUM(commit_count) as commit_count
-        FROM commit_aggs
-        GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
-        ORDER BY commit_count DESC
-        LIMIT {{ Int32(number_of_contributors) }}
+            SELECT 
+                ACTOR_LOGIN,
+                ACTOR_AVATAR_URL,
+                SUM(COMMIT_COUNT) as COMMIT_COUNT
+            FROM commit_aggs
+            GROUP BY ACTOR_LOGIN, ACTOR_AVATAR_URL
+            ORDER BY COMMIT_COUNT DESC
+            LIMIT {{ Int32(number_of_contributors) }}
+
+

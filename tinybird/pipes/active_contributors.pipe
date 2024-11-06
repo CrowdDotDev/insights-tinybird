@@ -1,7 +1,5 @@
 TOKEN "read" READ
 
-TOKEN "get_orgs_endpoint_read_5866" READ
-
 NODE contributors
 SQL >
 
