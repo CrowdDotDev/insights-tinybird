@@ -1,8 +1,0 @@
-NODE contributors_current
-SQL >
-
-    SELECT
-        count() as current_contributors
-    FROM commit_aggs
-
-
