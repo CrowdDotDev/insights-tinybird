@@ -1,0 +1,31 @@
+TOKEN "read" READ
+
+NODE daily_stars
+SQL >
+
+    SELECT 
+        toDate(TIMESTAMP) as date,
+        COALESCE(REPO_NAME, '') AS REPO_NAME,
+        COALESCE(ORG_NAME, '') as ORG_NAME,
+        countIf(ACTION = '"started"') - countIf(ACTION = 'deleted') as net_stars
+    FROM stars
+    WHERE REPO_NAME IS NOT NULL AND ORG_NAME IS NOT NULL
+    GROUP BY date, REPO_NAME, ORG_NAME
+    ORDER BY date, REPO_NAME, ORG_NAME
+
+
+
+NODE cumulative
+SQL >
+
+    SELECT
+        date,
+        REPO_NAME,
+        ORG_NAME,
+        sumState(net_stars) OVER (PARTITION BY REPO_NAME ORDER BY date ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW) AS cumulative_stars
+    FROM daily_stars
+    ORDER BY
+        date DESC,
+        cumulative_stars DESC
+
+

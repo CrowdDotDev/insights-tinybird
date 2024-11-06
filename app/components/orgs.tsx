@@ -45,7 +45,7 @@ export function Orgs() {
                 {org["o.ORG_NAME"].charAt(0).toUpperCase() +
                   org["o.ORG_NAME"].slice(1)}
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Commits:</span>
                   <span>{org.commit_count.toLocaleString()}</span>

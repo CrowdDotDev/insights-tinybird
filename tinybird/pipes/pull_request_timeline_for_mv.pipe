@@ -1,0 +1,71 @@
+NODE pull_request_events
+SQL >
+
+    SELECT
+        PULL_REQUEST_NUMBER,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE ACTION = '"opened"'), '1970-01-01 00:00:00') as OPENED_AT,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE ACTION = '"closed"'), '1970-01-01 00:00:00') as CLOSED_AT,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE ACTION = '"reopened"'), '1970-01-01 00:00:00') as REOPENED_AT,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE ACTION = '"labeled"'), '1970-01-01 00:00:00') as LABELLED_AT,
+        COALESCE(MIN(ACTOR_LOGIN) FILTER (WHERE ACTION = '"opened"'), '') as AUTHOR_LOGIN,
+        COALESCE(MIN(ACTOR_AVATAR_URL) FILTER (WHERE ACTION = '"opened"'), '') as AUTHOR_AVATAR_URL,
+        MIN(REPO_NAME) as REPO_NAME,
+        MIN(ORG_NAME) as ORG_NAME,
+        MIN(TIMESTAMP) as FIRST_EVENT_DATE
+    FROM pull_requests
+    WHERE ACTOR_LOGIN IS NOT NULL
+    GROUP BY PULL_REQUEST_NUMBER
+
+
+
+NODE review_events
+SQL >
+
+    SELECT
+        PULL_REQUEST_NUMBER,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE STATE = '"commented"'), '1970-01-01 00:00:00') as FIRST_COMMENT_AT,
+        COALESCE(MIN(ACTOR_LOGIN) FILTER (WHERE STATE = '"commented"'), '') as COMMENTER_LOGIN,
+        COALESCE(MIN(ACTOR_AVATAR_URL) FILTER (WHERE STATE = '"commented"'), '') as COMMENTER_AVATAR_URL,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE STATE = '"approved"'), '1970-01-01 00:00:00') as FIRST_APPROVAL_AT,
+        COALESCE(MIN(ACTOR_LOGIN) FILTER (WHERE STATE = '"approved"'), '') as APPROVER_LOGIN,
+        COALESCE(MIN(ACTOR_AVATAR_URL) FILTER (WHERE STATE = '"approved"'), '') as APPROVER_AVATAR_URL,
+        NULLIF(MIN(TIMESTAMP) FILTER (WHERE STATE IN ('"changes_requested", "dismissed"')), '1970-01-01 00:00:00') as FIRST_REJECTION_AT,
+        COALESCE(MIN(ACTOR_LOGIN) FILTER (WHERE STATE IN ('"changes_requested", "dismissed"')), '') as REJECTER_LOGIN,
+        COALESCE(MIN(ACTOR_AVATAR_URL) FILTER (WHERE STATE IN ('"changes_requested", "dismissed"')), '') as REJECTER_AVATAR_URL
+    FROM pull_request_reviews
+    WHERE ACTOR_LOGIN IS NOT NULL
+    GROUP BY PULL_REQUEST_NUMBER
+
+
+
+NODE pull_request_timeline
+SQL >
+
+    SELECT
+        COALESCE(p.PULL_REQUEST_NUMBER, '-1') as PULL_REQUEST_NUMBER,
+        p.FIRST_EVENT_DATE as DATE,
+        p.AUTHOR_LOGIN,
+        p.AUTHOR_AVATAR_URL,
+        p.REPO_NAME,
+        p.ORG_NAME,
+        p.OPENED_AT,
+        p.CLOSED_AT,
+        p.REOPENED_AT,
+        p.LABELLED_AT,
+        r.FIRST_COMMENT_AT,
+        r.COMMENTER_LOGIN,
+        r.COMMENTER_AVATAR_URL,
+        r.FIRST_APPROVAL_AT,
+        r.APPROVER_LOGIN,
+        r.APPROVER_AVATAR_URL,
+        r.FIRST_REJECTION_AT,
+        r.REJECTER_LOGIN,
+        r.REJECTER_AVATAR_URL
+    FROM pull_request_events p
+    LEFT JOIN review_events r
+    ON p.PULL_REQUEST_NUMBER = r.PULL_REQUEST_NUMBER
+
+TYPE materialized
+DATASOURCE pull_request_timeline_mv
+
+

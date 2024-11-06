@@ -1,0 +1,29 @@
+TOKEN "read" READ
+
+
+NODE time_to_close_pr_endpoint
+SQL >
+    %
+    SELECT
+        DATE_TRUNC('week', DATE) as date,
+        avg(dateDiff('hour', OPENED_AT, CLOSED_AT)) as avg_hours_to_close
+    FROM pull_request_timeline_mv
+    WHERE CLOSED_AT IS NOT NULL
+        AND DATE >= 
+            CASE 
+                WHEN {{ defined(start_date) }} THEN toDate({{ Date(start_date) }})
+                ELSE subtractYears(now(), 1)
+            END
+        AND DATE < 
+            CASE 
+                WHEN {{ defined(end_date) }} THEN toDate({{ Date(end_date) }})
+                ELSE toDate(now())
+            END
+        {% if defined(org_name) %}
+        AND ORG_NAME = {{ String(org_name) }}
+        {% end %}
+        {% if defined(repo_name) %}
+        AND REPO_NAME = {{ String(repo_name) }}
+        {% end %}
+    GROUP BY date
+    ORDER BY date DESC

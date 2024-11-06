@@ -23,6 +23,7 @@ import {
 import { useEffect, useState } from "react";
 import { Counts } from "./counts";
 import { StarsGraph } from "./starsGraph";
+import { PRs } from "./prs";
 
 // Get default dates
 const getDefaultDates = () => {
@@ -135,6 +136,12 @@ export default function Org({ name }: { name: string }) {
         />
         <ContributorDependency
           name={name}
+          repo_name={selectedRepo || undefined}
+          start_date={startDate.toISOString().split("T")[0]}
+          end_date={end}
+        />
+        <PRs
+          org_name={name}
           repo_name={selectedRepo || undefined}
           start_date={startDate.toISOString().split("T")[0]}
           end_date={end}

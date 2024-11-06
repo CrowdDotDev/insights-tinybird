@@ -1,0 +1,26 @@
+# Data Source created from Pipe 'pull_request_timeline_for_mv'
+
+SCHEMA >
+    `PULL_REQUEST_NUMBER` String,
+    `DATE` DateTime,
+    `AUTHOR_LOGIN` String,
+    `AUTHOR_AVATAR_URL` String,
+    `REPO_NAME` Nullable(String),
+    `ORG_NAME` Nullable(String),
+    `OPENED_AT` Nullable(DateTime),
+    `CLOSED_AT` Nullable(DateTime),
+    `REOPENED_AT` Nullable(DateTime),
+    `LABELLED_AT` Nullable(DateTime),
+    `FIRST_COMMENT_AT` Nullable(DateTime),
+    `COMMENTER_LOGIN` String,
+    `COMMENTER_AVATAR_URL` String,
+    `FIRST_APPROVAL_AT` Nullable(DateTime),
+    `APPROVER_LOGIN` String,
+    `APPROVER_AVATAR_URL` String,
+    `FIRST_REJECTION_AT` Nullable(DateTime),
+    `REJECTER_LOGIN` String,
+    `REJECTER_AVATAR_URL` String
+
+ENGINE "MergeTree"
+ENGINE_PARTITION_KEY "toYear(DATE)"
+ENGINE_SORTING_KEY "DATE, PULL_REQUEST_NUMBER, AUTHOR_LOGIN, APPROVER_LOGIN, COMMENTER_LOGIN, REJECTER_LOGIN"

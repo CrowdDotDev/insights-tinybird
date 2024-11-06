@@ -1,0 +1,41 @@
+TOKEN "read" READ
+
+NODE calculate_percentages
+SQL >
+    %
+    WITH pr_stats AS (
+        SELECT
+            COUNT(*) as total_prs,
+            COUNT(CASE 
+                WHEN FIRST_REJECTION_AT IS NOT NULL THEN 1 
+            END) as prs_with_changes,
+            COUNT(CASE 
+                WHEN FIRST_APPROVAL_AT IS NOT NULL AND FIRST_COMMENT_AT IS NULL THEN 1 
+            END) as approved_without_comments,
+            COUNT(CASE 
+                WHEN FIRST_APPROVAL_AT IS NOT NULL AND FIRST_COMMENT_AT IS NOT NULL THEN 1 
+            END) as approved_with_comments
+        FROM pull_request_timeline_mv
+        WHERE DATE >= 
+            CASE 
+                WHEN {{ defined(start_date) }} THEN toDate({{ Date(start_date) }})
+                ELSE subtractYears(now(), 1)
+            END
+        AND DATE < 
+            CASE 
+                WHEN {{ defined(end_date) }} THEN toDate({{ Date(end_date) }})
+                ELSE toDate(now())
+            END
+        {% if defined(org_name) %}
+        AND ORG_NAME = {{ String(org_name) }}
+        {% end %}
+        {% if defined(repo_name) %}
+        AND REPO_NAME = {{ String(repo_name) }}
+        {% end %}
+    )
+    SELECT 
+        ROUND(100.0 * prs_with_changes / total_prs, 2) as percentage_requiring_changes,
+        ROUND(100.0 * approved_without_comments / total_prs, 2) as percentage_approved_without_comments,
+        ROUND(100.0 * approved_with_comments / total_prs, 2) as percentage_approved_with_comments
+    FROM pr_stats
+

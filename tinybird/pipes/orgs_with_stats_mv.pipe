@@ -1,7 +1,3 @@
-TOKEN "get_orgs_endpoint_read_9084" READ
-
-TOKEN "read" READ
-
 NODE distinct_orgs
 SQL >
 
