@@ -19,11 +19,12 @@ export function ActiveContributors(params: {
   console.log(diffInDays);
 
   let group_by = "year";
-  if (diffInDays <= 8) {
+  if (diffInDays <= 31) {
     group_by = "day";
-  } else if (diffInDays <= 35) {
+  } else if (diffInDays <= 180) {
     group_by = "week";
-  } else if (diffInDays <= 380) {
+  } else if (diffInDays <= 1825) {
+    // 5 years * 365 days
     group_by = "month";
   }
 
