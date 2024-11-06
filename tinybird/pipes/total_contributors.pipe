@@ -1,3 +1,5 @@
+TOKEN "read" READ
+
 NODE contributors_current
 SQL >
     SELECT

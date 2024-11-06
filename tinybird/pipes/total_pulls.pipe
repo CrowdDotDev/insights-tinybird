@@ -1,0 +1,27 @@
+TOKEN "read" READ
+
+NODE total_pulls_endpoint
+SQL >
+    %
+    SELECT
+        count() AS total
+    FROM
+        pull_requests
+    WHERE
+        TIMESTAMP >= 
+            CASE 
+                WHEN {{ defined(start_date) }} THEN toDateTime({{ Date(start_date) }})
+                ELSE subtractYears(now(), 1)
+            END
+        AND TIMESTAMP < 
+            CASE 
+                WHEN {{ defined(end_date) }} THEN toDateTime({{ Date(end_date) }})
+                ELSE toDateTime(now())
+            END
+        AND ACTION = '"closed"'
+        {% if defined(org_name) %}
+        AND ORG_NAME = {{ String(org_name) }}
+        {% end %}
+        {% if defined(repo_name) %}
+        AND REPO_NAME = {{ String(repo_name) }}
+        {% end %}

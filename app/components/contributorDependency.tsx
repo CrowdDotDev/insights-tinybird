@@ -147,7 +147,7 @@ export function ContributorDependency({
                       </Avatar>
                       <span>{person.login}</span>
                       <span className="text-gray-500">
-                        ({person.commit_count} contributions)
+                        ({person.commit_count.toLocaleString()} contributions)
                       </span>
                     </a>
                   ))}

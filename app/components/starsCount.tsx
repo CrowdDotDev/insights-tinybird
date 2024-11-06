@@ -3,7 +3,7 @@
 import { Card, CardTitle, CardHeader, CardContent } from "@/components/ui/card";
 import { useState, useEffect } from "react";
 
-export function ContributorCount({
+export function StarsCount({
   name,
   repo_name,
   start_date,
@@ -28,7 +28,7 @@ export function ContributorCount({
 
       // Fetch current period
       const currentResponse = await fetch(
-        `https://api.tinybird.co/v0/pipes/total_contributors.json?name=${name}&start_date=${start_date}&end_date=${end_date}${
+        `https://api.tinybird.co/v0/pipes/total_stars.json?org_name=${name}&start_date=${start_date}&end_date=${end_date}${
           repo_name ? `&repo_name=${repo_name}` : ""
         }`,
         {
@@ -40,15 +40,14 @@ export function ContributorCount({
 
       // Fetch previous period
       const previousResponse = await fetch(
-        `https://api.tinybird.co/v0/pipes/total_contributors.json?name=${name}&start_date=${
+        `https://api.tinybird.co/v0/pipes/total_stars.json?org_name=${name}&start_date=${
           previousStart.toISOString().split("T")[0]
         }&end_date=${previousEnd.toISOString().split("T")[0]}${
           repo_name ? `&repo_name=${repo_name}` : ""
         }`,
         {
           headers: {
-            Authorization:
-              "Bearer p.eyJ1IjogIjAzZDRiNDAxLWY5ZjgtNGM2ZS04MjBlLTgxZWU5ZWNlN2M4NyIsICJpZCI6ICJkNzQzNjNkNi02MWFjLTQ2NDQtYTI0OC1mOGE0YWMwZmRhNTIiLCAiaG9zdCI6ICJldV9zaGFyZWQifQ.mLKLtuNzffHRpfODI9bQfam6U_bo4RPYhAY8MC2PIkk",
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_TINYBIRD_TOKEN}`,
           },
         }
       );
@@ -71,7 +70,7 @@ export function ContributorCount({
   return (
     <Card className="">
       <CardHeader>
-        <CardTitle>Contributors</CardTitle>
+        <CardTitle>Stars</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex items-center space-x-4">

@@ -1,4 +1,6 @@
 import { ContributorCount } from "./contributorCount";
+import { PullRequestCount } from "./pullRequestCount";
+import { StarsCount } from "./starsCount";
 
 export function Counts({
   name,
@@ -19,13 +21,13 @@ export function Counts({
         start_date={start_date}
         end_date={end_date}
       />
-      <ContributorCount
+      <PullRequestCount
         name={name}
         repo_name={repo_name}
         start_date={start_date}
         end_date={end_date}
       />
-      <ContributorCount
+      <StarsCount
         name={name}
         repo_name={repo_name}
         start_date={start_date}
