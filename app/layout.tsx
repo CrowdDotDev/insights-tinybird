@@ -30,7 +30,7 @@ export default function RootLayout({
       >
         <main className="max-w-5xl mx-auto">
           <div className="w-full py-8 rounded-lg border-green-600 bg-green-100 border text-center my-10 mx-auto max-w-4xl">
-            <h1 className="font-bold">Disclaimer</h1>
+            <h1 className="font-bold">Disclaimer:</h1>
             <p>
               This is a proof of concept to explore and demonstrate a new
               architecture for Insights. The data is most likely not accurate.
