@@ -35,10 +35,6 @@ export default function RootLayout({
               This is a proof of concept to explore and demonstrate a new
               architecture for Insights. The data is most likely not accurate.
             </p>
-            <p>
-              The app will go down for the day if we reach more than 1,000
-              requests per day because we are in the Tinybird free trial.
-            </p>
           </div>
           {children}
         </main>
