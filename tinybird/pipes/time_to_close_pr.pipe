@@ -6,7 +6,7 @@ SQL >
     %
     SELECT
         DATE_TRUNC('week', DATE) as date,
-        avg(dateDiff('hour', OPENED_AT, CLOSED_AT)) as avg_hours_to_close
+        avg(abs(dateDiff('hour', OPENED_AT, CLOSED_AT))) as avg_hours_to_close
     FROM pull_request_timeline_mv
     WHERE CLOSED_AT IS NOT NULL
         AND DATE >= 
